@@ -124,7 +124,190 @@
 
 ![](https://cn.vuejs.org/images/lifecycle.png)
 
+###  建议在mounted做AJAX请求
 
+```html
+<body>
+<div id="vue">
+    <div>
+        {{info.name}}{{info.age}}
+    </div>
+</div>
+
+
+<script src="https://cdn.bootcss.com/vue/2.5.2/vue.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script type="text/javascript">
+    let v = new Vue({
+        el:"#vue",
+        data:{
+            message:"你好"
+        },
+        data(){
+          return{
+              info:{
+              }
+          }
+        },
+        mounted() { //钩子函数 链式编程
+            axios.get("../data/axios.json").then(Response=>(this.info = Response.data));
+        }
+    });
+</script>
+</body>
+```
+
+---
+
+## 计算属性（重要）
+
+计算出来的结果，保存在属性中。计算结果缓存。
+
+![image-20210306223900982](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20210306223900982.png)
+
+```html
+<body>
+<div id="app">
+    method时间{{getTime()}}
+    computed时间{{getTime_computed}}
+</div>
+
+<script src="https://cdn.bootcss.com/vue/2.5.2/vue.min.js"></script>
+<script>
+    let v = new Vue({
+        el:"#app",
+        data:{
+            message:1
+        },
+        methods:{
+            getTime:function () {
+                return Date.now().toString();
+            }
+        },
+        computed:{
+            getTime_computed:function () {
+                this.message;
+                return Date.now().toString();
+            }
+        }
+    });
+</script>
+</body>
+```
+
+---
+
+---
+
+### 内容分发
+
+插槽<slot></slot>
+
+```html
+<body>
+
+<div id="app">
+    <todo>
+        <todo_title slot="t_title" :title="t"></todo_title>
+        <todo_item slot="t_item" v-for="i in songs" :item="i"></todo_item>
+    </todo>
+</div>
+
+<script src="https://cdn.bootcss.com/vue/2.5.2/vue.min.js"></script>
+<script type="text/javascript">
+
+    Vue.component("todo",{
+        template:"<div>" +
+            "<slot name='t_title'></slot>" +
+            "<ul>" +
+            "<slot name='t_item'></slot>" +
+            "</ul>" +
+            "</div>"
+    });
+
+    Vue.component("todo_title",{
+        props:['title'],
+        template:"<div>{{title}}</div>"
+    });
+    
+    Vue.component("todo_item",{
+        props:['item'],
+        template:"<li>{{item}}</li>"
+    });
+
+    let v = new Vue({
+       el:"#app",
+       data:{
+           t:"我喜欢的歌",
+           songs:["我爱你爱我","白玫瑰","红玫瑰"]
+       }
+    });
+</script>
+</body>
+```
+
+
+
+----
+
+### 自定义事件
+
+![image-20210306233624563](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20210306233624563.png)
+
+```html
+<body>
+
+<div id="app">
+    <todo>
+        <todo_title slot="t_title" :title="t"></todo_title>
+        <todo_item slot="t_item" v-for="(i,shu) in songs" :item="i" :index="shu" v-on:re="removeItems(shu)"></todo_item>
+    </todo>
+</div>
+
+<script src="https://cdn.bootcss.com/vue/2.5.2/vue.min.js"></script>
+<script type="text/javascript">
+
+    Vue.component("todo",{
+        template:"<div>" +
+            "<slot name='t_title'></slot>" +
+            "<ul>" +
+            "<slot name='t_item'></slot>" +
+            "</ul>" +
+            "</div>"
+    });
+
+    Vue.component("todo_title",{
+        props:['title'],
+        template:"<div>{{title}}</div>"
+    });
+
+    Vue.component("todo_item",{
+        props:['item',"index"],
+        template:"<li>{{index}}---{{item}}<button @click='remove(index)' >删除</button></li>",
+        methods:{
+        remove:function (index) {
+            alert(index);
+            this.$emit("re");
+        }
+    }
+    });
+
+    let v = new Vue({
+        el:"#app",
+        data:{
+            t:"我喜欢的歌",
+            songs:["我爱你爱我","白玫瑰","红玫瑰"]
+        },
+        methods:{
+            removeItems:function (index) {
+                console.log("删除了"+index+":"+this.songs[index]);
+                this.songs.splice(index,1);
+            }
+        }
+    });
+</script>
+</body>
+```
 
 
 
