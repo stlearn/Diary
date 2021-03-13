@@ -100,9 +100,73 @@
      >>console.log(this.getOld);
      >>console.log(this.getOldThan(21));
      >>```
-   + Mutations
-     > + 
-   + Actions
+   + Mutations(转变，变异，变化)(处理同步)
+     >```javascript
+     >mutations:{
+     >   increment(state){
+     >      state.count++ 
+     >  } 
+     >}
+     >```
+     > + 更改store中状态的唯一途径就是提交mutation。每个 mutation 都有一个字符串的 事件类型 (type) 和 一个 回调函数 (handler)。要唤醒一个 mutation handler，你需要以相应的 type 调用 store.commit 方法：
+     >`store.commit('type');`
+     > + 提交载荷（Payload）
+     >>+ 你可以向 store.commit 传入额外的参数，即 mutation 的 载荷（payload）： 
+     >>```javascript
+     >>mutations:{
+     >>   increment(state){
+     >>      state.count++ 
+     >>  } 
+     >>}
+     >>//使用
+     >>store.commit('increment',10);
+     >>```
+     >> + 大多数时候载荷应该是一个对象。
+     >>```javascript
+     >> mutations: {
+     >>    increment (state, payload) {
+     >>        state.count += payload.amount
+     >>    }
+     >> }
+     >> store.commit('increment', {
+     >>    amount: 10
+     >>    }) 
+     >>```
+     >> + 对象风格的提交
+     >>```javascript
+     >>store.commit({
+     >>    type:'increment',
+     >>    amount:10
+     >>});
+     >>```
+     > + Mutation 需遵守 Vue 的响应规则
+     >> + 最好提前在你的 store 中初始化好所有所需属性。
+     >> + 当需要在对象上添加新属性时，你应该              
+     >> `state.obj = { ...state.obj, newProp: 123 }`
+     > + Mutation 必须是同步函数(一条重要的准则)
+     > + 在组件中提交mutation
+     >>1. `this.$store.commit('type')`
+     >>2. 使用mapMutations辅助函数
+     >>```javascript
+     >>import { mapMutations } from 'vuex'
+     >>
+     >>export default {
+     >>  // ...
+     >>  methods: {
+     >>    ...mapMutations([
+     >>      'increment', // 将 `this.increment()` 映射为 `this.    $store.commit('increment')`
+     >>
+     >>      // `mapMutations` 也支持载荷：
+     >>      'incrementBy' // 将 `this.incrementBy(amount)` 映射    为 `this.$store.commit('incrementBy', amount)`
+     >>    ]),
+     >>    ...mapMutations({
+     >>      add: 'increment' // 将 `this.add()` 映射为 `this.  $store.commit('increment')`
+     >>    })
+     >>  }
+     >>}
+     >>```
+   + Actions(处理异步)
+   + 
      > + 
    + Modules
      > + 
