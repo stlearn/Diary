@@ -166,8 +166,85 @@
      >>}
      >>```
    + Actions(处理异步)
-   + 
-     > + 
+     > + Action类似以mutation,但是有以下不同：
+     >> + Action提交的是mutation，而不是直接改变状态
+     >> + Action可以包含任意异步操作
+     > + 例子
+     >>```javascript
+     >> actions: {
+     >>    increment (context) {
+     >>      context.commit('increment')
+     >>    }
+     >>  }
+     >>//参数解构简化代码
+     >> actions: {
+     >>   increment ({ commit }) {
+     >>     commit('increment')
+     >>   }
+     >> }
+     >>```
+     > + 分发Action
+     >>Action 通过 store.dispatch 方法触发：
+     >>`store.dispatch('increment')`
+     > + Actions 支持同样的载荷方式和对象方式进行分发
+     >>```javascript
+     >>// 以载荷形式分发
+     >>store.dispatch('incrementAsync', {
+     >>  amount: 10
+     >>})
+     >>
+     >>// 以对象形式分发
+     >>store.dispatch({
+     >>  type: 'incrementAsync',
+     >>  amount: 10
+     >>})
+     >>```
+     >+ 在组件中分发Action
+     >>`this.$store.dispatch('xxx')`
+     >>
+     >>或者使用mapActions辅助函数
+     > + 组合Action
+     >>store.dispatch 可以处理被触发的 action 的处理函数返回的 Promise，并且 store.dispatch 仍旧返回 Promise：
+     >>```javascript
+     >>actions: {
+     >>  actionA ({ commit }) {
+     >>    return new Promise((resolve, reject) => {
+     >>      setTimeout(() => {
+     >>        commit('someMutation')
+     >>        resolve()
+     >>      }, 1000)
+     >>    })
+     >>  }
+     >>}
+     >>//可以这样使用
+     >>store.dispatch('actionA').then(() => {
+     >>  // ...
+     >>})
+     >>
+     >>//还可以在Action中使用
+     >>actions: {
+     >>  // ...
+     >>  actionB ({ dispatch, commit }) {
+     >>    return dispatch('actionA').then(() => {
+     >>      commit('someOtherMutation')
+     >>    })
+     >>  }
+     >>}
+     >>
+     >>// 假设 getData() 和 getOtherData() 返回的是Promise
+     >>
+     >>//如果我们利用 async / await (opens new window)，我们可以如下组合 action：
+     >>actions: {
+     >>  async actionA ({ commit }) {
+     >>    commit('gotData', await getData())
+     >>  },
+     >>  async actionB ({ dispatch, commit }) {
+     >>    await dispatch('actionA') // 等待 actionA完成
+     >>    commit('gotOtherData', await getOtherData     >>())
+     >>  }
+     >>}
+     >>```
+     >>一个 store.dispatch 在不同模块中可以触发多个 action 函数。在这种情况下，只有当所有触发函数完成后，返回的 Promise 才会执行。
    + Modules
      > + 
 4. 
