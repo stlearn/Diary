@@ -271,4 +271,35 @@
      >>store.state.a // -> moduleA 的状态
      >>store.state.b // -> moduleB 的状态
      >>```
-4. 
+4. ## 进阶概念
+   ### 严格模式
+   >开启严格模式，仅需在创建 store 的时候传入 strict: true：
+   >>```javascript
+   >>const store = new Vuex.Store({
+   >>  // ...
+   >>  strict: process.env.NODE_ENV !== 'production'
+   >>})
+   >>```
+   >在严格模式下，无论何时发生了状态变更且不是由 mutation 函数引起的，将会抛出错误。
+   >不要在发布环境下启用严格模式！严格模式会深度监测状态树来检测不合规的状态变更——请确保在发布环境下关闭严格模式，以避免性能损失。
+
+   ### 表单处理
+   > + 创建一个本地变量进行v-model作为mutation的桥梁参数（麻烦）
+   > + 创建一个method内部进行mutation的commit
+   > + 使用双向绑定的计算属性（清晰明了但是麻烦）
+   >>`<input v-model="message">`
+   >>```javascript
+   >>computed: {
+   >>  message: {
+   >>    get () {
+   >>      return this.$store.state.obj.message
+   >>    },
+   >>    set (value) {
+   >>      this.$store.commit('updateMessage', value)
+   >>    }
+   >>  }
+   >>}
+   >>```
+  ### 测试
+  ### 热重载
+  ### 插件
